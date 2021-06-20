@@ -13,12 +13,14 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {              
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci'; 
+
             $table->increments('id');
             $table->timestamps();
-            $table->string('name', 100);
-            $table->dateTime('created_at');
-            $table->dateTime('updated_at');
+
+            $table->string('name', 100)->nullable();      
         });
     }
 
