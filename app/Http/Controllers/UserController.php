@@ -36,10 +36,10 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //
-        $user=$request->input('user',null);
+        $user_req=$request->input('user',null);
         
-        $user_object=json_decode($user);
-        $user_array=json_decode($user,true);        
+        $user_object=json_decode($user_req);
+        $user_array=json_decode($user_req,true);        
 
         if(!empty($user_object) && !empty($user_array)){
             $user_array=array_map('trim',$user_array);
@@ -47,7 +47,7 @@ class UserController extends Controller
             $validator = Validator::make($user_array, [
                 'name' => 'required|alpha',
                 'surname' => 'required|alpha',
-                'email' => 'required|email',
+                'email' => 'required|email|unique:users',
                 'password' => 'required',
             ]);
 
@@ -59,10 +59,26 @@ class UserController extends Controller
                     'validator'=>$validator->errors()              
                 );
             }else{
+                $options = [
+                    'cost' => 4,
+                ];
+                $pwd_hashed = password_hash($user_object->password, PASSWORD_BCRYPT, $options);
+
+                $user = new \App\User([
+                    'name'=>$user_array['name'],
+                    'surname'=>$user_array['surname'],
+                    'email'=>$user_array['email'],
+                    'password'=>$pwd_hashed,
+                    'role'=>'ROLE_USER'
+                ]);                
+                
+                $user->save();
+
                 $response=array(
                     'status'=>'success',
                     'code'=>201,
-                    'message'=>'Usuario registrado'                
+                    'message'=>'Usuario registrado',
+                    'created'=>$user
                 );
             }   
         }else{
@@ -120,11 +136,6 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
-        //
-    }
-
-    public function login(Request $request)
     {
         //
     }

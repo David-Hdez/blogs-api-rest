@@ -28,7 +28,7 @@ class CreateUsersTable extends Migration
             $table->string('surname',100)->nullable();
             $table->string('role',20)->nullable();
             $table->text('description')->nullable();
-            $table->string('image',255)->nullable();
+            $table->string('img',255)->nullable();
         });
     }
 

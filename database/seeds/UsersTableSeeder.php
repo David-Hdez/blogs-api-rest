@@ -16,12 +16,14 @@ class UsersTableSeeder extends Seeder
             'name' => 'VEMBIT',
             'email' => 'david.alfredo.hdez@outlook.com',
             'password' => bcrypt('secret'),
+            'role' => 'ROLE_ADMIN',
         ]);
 
         DB::table('users')->insert([
             'name' => 'David',
             'email' => 'davidalfredo.hdez@gmail.com',
             'password' => bcrypt('secret'),
+            'role' => 'ROLE_USER',
         ]);
     }
 }
