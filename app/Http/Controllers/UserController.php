@@ -139,4 +139,13 @@ class UserController extends Controller
     {
         //
     }
+
+    public function login(Request $request)
+    {
+        //
+        $auth=new \JWTAuth();
+        echo $auth->signup();
+
+        return 'Accion login';
+    }
 }
