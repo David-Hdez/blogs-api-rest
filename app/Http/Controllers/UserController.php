@@ -62,7 +62,7 @@ class UserController extends Controller
                 $options = [
                     'cost' => 4,
                 ];
-                $pwd_hashed = password_hash($user_object->password, PASSWORD_BCRYPT, $options);
+                $pwd_hashed = hash('sha256',$user_object->password);
 
                 $user = new \App\User([
                     'name'=>$user_array['name'],
@@ -144,8 +144,10 @@ class UserController extends Controller
     {
         //
         $auth=new \JWTAuth();
-        echo $auth->signup();
+        
+        $email='alfredo.pacheco97@outlook.com';
+        $pwd_hashed=hash('sha256','j4959M8');
 
-        return 'Accion login';
+        return response()->json($auth->signup($email, $pwd_hashed, true));
     }
 }
