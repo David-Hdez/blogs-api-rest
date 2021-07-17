@@ -40,16 +40,22 @@ class JWTAuth
          $decoded = JWT::decode($jwt, $this->key, array('HS256'));
 
          if (is_null($getToken)) {
-            $response= $jwt;
+            $response= array(
+               'jwt'=>$jwt,
+               'code'=>200
+            );
          } else {
-            $response= $decoded;
+            $response= array(
+               'jwt'=>$decoded,
+               'code'=>200
+            );
          }
          
       } else {
          $response=array(
             'status'=>'error',
-            'code'=>404,
-            'message'=>'Usuario no esta registrado'                
+            'code'=>404,            
+            'jwt'=>'Usuario no esta registrado'
          );
       }      
 

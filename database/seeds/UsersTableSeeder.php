@@ -15,14 +15,14 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
             'name' => 'VEMBIT',
             'email' => 'david.alfredo.hdez@outlook.com',
-            'password' => bcrypt('secret'),
+            'password' => hash('sha256','secret_47'),
             'role' => 'ROLE_ADMIN',
         ]);
 
         DB::table('users')->insert([
             'name' => 'David',
             'email' => 'davidalfredo.hdez@gmail.com',
-            'password' => bcrypt('secret'),
+            'password' => hash('sha256','secret_48'),
             'role' => 'ROLE_USER',
         ]);
     }

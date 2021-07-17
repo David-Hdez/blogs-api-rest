@@ -58,10 +58,7 @@ class UserController extends Controller
                     'message'=>'Usuario no se pudo registrar',
                     'validator'=>$validator->errors()              
                 );
-            }else{
-                $options = [
-                    'cost' => 4,
-                ];
+            }else{               
                 $pwd_hashed = hash('sha256',$user_object->password);
 
                 $user = new \App\User([
@@ -144,10 +141,35 @@ class UserController extends Controller
     {
         //
         $auth=new \JWTAuth();
-        
-        $email='alfredo.pacheco97@outlook.com';
-        $pwd_hashed=hash('sha256','j4959M8');
 
-        return response()->json($auth->signup($email, $pwd_hashed, true));
+        $user_req=$request->input('user',null);
+        
+        $user_object=json_decode($user_req);
+        $user_array=json_decode($user_req,true); 
+
+        $validator = Validator::make($user_array, [            
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            $response=array(
+                'status'=>'error',
+                'code'=>401,
+                'message'=>'Usuario no se pudo autorizar',
+                'validator'=>$validator->errors(),
+                'jwt'=>'error'              
+            );
+        }else{
+            $pwd_hashed=hash('sha256',$user_object->password); 
+                       
+            $response=$auth->signup($user_object->email,$pwd_hashed);
+
+            if (!empty($user_object->getToken)) {
+                $response=$auth->signup($user_object->email,$pwd_hashed,true);
+            }
+        }        
+
+        return response()->json($response['jwt'], $response['code']);
     }
 }
