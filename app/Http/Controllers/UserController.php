@@ -117,13 +117,20 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Request  $request   
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         //
+        $token_req=$request->header('Authorization');
+
+        $auth=new \JWTAuth();
+
+        $checkToken=$auth->checkToken($token_req);
+
+        if ($checkToken) {
+            # code...
+        }
     }
 
     /**

@@ -61,4 +61,30 @@ class JWTAuth
 
       return $response;
    }
+
+   public function checkToken($jwt, $getIdentity=false){
+      $authorized=false;
+
+      try {
+         $jwt=str_replace('"','',$jwt);
+
+         $decoded = JWT::decode($jwt, $this->key, array('HS256'));
+      } catch (\UnexpectedValueException $uve) {
+         $authorized=false;         
+      }catch(\DomainException $de){
+         $authorized=false;
+      }  
+      
+      if (!empty($decoded) && is_object($decoded) && isset($decoded->sub)) {
+         $authorized=true;
+      } else {
+         $authorized=false;
+      }
+
+      if ($getIdentity) {
+         return $decoded;
+      }
+      
+      return $authorized;
+   }
 }
