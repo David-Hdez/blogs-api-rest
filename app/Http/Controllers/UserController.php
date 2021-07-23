@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Validator;
 use Illuminate\Http\Request;
+use App\User;
 
 class UserController extends Controller
 {
@@ -128,9 +129,44 @@ class UserController extends Controller
 
         $checkToken=$auth->checkToken($token_req);
 
-        if ($checkToken) {
-            # code...
-        }
+        $user_req=$request->input('user',null);
+            
+        $user_array=json_decode($user_req,true); 
+
+        if ($checkToken && !empty($user_array)) {            
+            //checkToken puede deveolver el objeto del usuario ya validado
+            $user_decoded=$auth->checkToken($token_req,true);
+
+            $validator = \Validator::make($user_array, [
+                'name' => 'required|alpha',
+                'surname' => 'required|alpha',
+                'email' => 'required|email|unique:users,'.$user_decoded->sub,                
+            ]);
+
+            unset($user_array['id']);
+            unset($user_array['role']);
+            unset($user_array['password']);
+            unset($user_array['created_at']);
+            unset($user_array['remember_token']);
+
+            $user_updated=User::where('id',$user_decoded->sub)
+                ->update($user_array);
+
+            $response=array(
+                'status'=>'success',
+                'code'=>200,
+                'user'=>$user_array,
+                'updates'=>$user_array
+            );
+        }else{
+            $response=array(
+                'status'=>'error',
+                'code'=>401,
+                'message'=>'Usuario no esta identificado'
+            );
+        }        
+
+        return response()->json($response, $response['code']);
     }
 
     /**
