@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Validator;
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -177,11 +178,25 @@ class UserController extends Controller
      */
     public function avatarUpload(Request $request)
     {
-        $response=array(
-            'status'=>'error',
-            'code'=>401,
-            'message'=>'Usuario no esta identificado'
-        );       
+        $file = $request->file('file0');
+
+        if ($file) {
+            $avatar_name=time().$file->getClientOriginalName();
+
+            Storage::disk('avatars')->put($avatar_name, \File::get($file));
+
+            $response=array(
+                'status'=>'success',
+                'code'=>200,
+                'avatar'=>$avatar_name
+            ); 
+        }else{
+            $response=array(
+                'status'=>'error',
+                'code'=>500,
+                'message'=>'Usuario no esta identificado'
+            ); 
+        }              
 
         return response()->json($response, $response['code'])
             ->header('Content-Type', 'text/plain');
