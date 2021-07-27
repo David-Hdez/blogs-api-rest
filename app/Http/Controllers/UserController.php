@@ -134,7 +134,7 @@ class UserController extends Controller
         $user_array=json_decode($user_req,true); 
 
         if ($checkToken && !empty($user_array)) {            
-            //checkToken puede deveolver el objeto del usuario ya validado
+            //checkToken puede devolver el objeto del usuario ya validado
             $user_decoded=$auth->checkToken($token_req,true);
 
             $validator = \Validator::make($user_array, [
@@ -143,6 +143,7 @@ class UserController extends Controller
                 'email' => 'required|email|unique:users,'.$user_decoded->sub,                
             ]);
 
+            //Columnas que no se van a actualizar
             unset($user_array['id']);
             unset($user_array['role']);
             unset($user_array['password']);
@@ -167,6 +168,23 @@ class UserController extends Controller
         }        
 
         return response()->json($response, $response['code']);
+    }
+
+    /**
+     * Upload image.
+     *
+     * @param  \Illuminate\Http\Request  $request   
+     */
+    public function upload(Request $request)
+    {
+        $response=array(
+            'status'=>'error',
+            'code'=>401,
+            'message'=>'Usuario no esta identificado'
+        );       
+
+        return response()->json($response, $response['code'])
+            ->header('Content-Type', 'text/plain');
     }
 
     /**
