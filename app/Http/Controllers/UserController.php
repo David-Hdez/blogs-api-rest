@@ -171,11 +171,11 @@ class UserController extends Controller
     }
 
     /**
-     * Upload image.
+     * Upload avatar for User.
      *
      * @param  \Illuminate\Http\Request  $request   
      */
-    public function upload(Request $request)
+    public function avatarUpload(Request $request)
     {
         $response=array(
             'status'=>'error',
