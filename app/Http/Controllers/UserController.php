@@ -180,7 +180,18 @@ class UserController extends Controller
     {
         $file = $request->file('file0');
 
-        if ($file) {
+        $validator = \Validator::make($request->all(), [
+            'file0' => 'required|image',    
+            'file0' => 'mimes:jpeg,jpg,png,gif'                     
+        ]);
+
+        if (!$file || $validator->fails()) {
+            $response=array(
+                'status'=>'error',
+                'code'=>400,
+                'message'=>'file avatar'
+            ); 
+        }else{
             $avatar_name=time().$file->getClientOriginalName();
 
             Storage::disk('avatars')->put($avatar_name, \File::get($file));
@@ -189,13 +200,7 @@ class UserController extends Controller
                 'status'=>'success',
                 'code'=>200,
                 'avatar'=>$avatar_name
-            ); 
-        }else{
-            $response=array(
-                'status'=>'error',
-                'code'=>500,
-                'message'=>'Usuario no esta identificado'
-            ); 
+            );             
         }              
 
         return response()->json($response, $response['code'])

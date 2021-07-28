@@ -26,8 +26,7 @@ class JWT
         } else {
             $response=array(
                 'status'=>'error',
-                'code'=>409,
-                'message'=>'Subiendo imagen'
+                'code'=>403                
             );
 
             return response()->json($response, $response['code']);
