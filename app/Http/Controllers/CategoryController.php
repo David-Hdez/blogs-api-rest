@@ -15,6 +15,11 @@ class CategoryController extends Controller
     public function index()
     {
         //
+        $categories = Category::all();
+
+        return response()->json([
+            'categories'=>$categories
+        ], 200);
     }
 
     /**
@@ -41,12 +46,28 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Category  $category
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show($id)
     {
         //
+        $category = Category::find($id);
+
+        if (is_object($category)) {
+            $resp=array(
+                'code'=>200,
+                'category'=>$category
+            );
+        } else {
+            $resp=array(
+                'code'=>404,
+                'message'=>'Category does not exists'
+            );
+        }
+        
+
+        return response()->json($resp, $resp['code']);
     }
 
     /**
