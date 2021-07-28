@@ -55,7 +55,7 @@ class UserController extends Controller
             ]);
 
             if ($validator->fails()) {
-                $response=array(
+                $resp=array(
                     'status'=>'error',
                     'code'=>400,
                     'message'=>'Usuario no se pudo registrar',
@@ -74,7 +74,7 @@ class UserController extends Controller
                 
                 $user->save();
 
-                $response=array(
+                $resp=array(
                     'status'=>'success',
                     'code'=>201,
                     'message'=>'Usuario registrado',
@@ -82,7 +82,7 @@ class UserController extends Controller
                 );
             }   
         }else{
-            $response=array(
+            $resp=array(
                 'status'=>'error',
                 'code'=>400,
                 'message'=>'Datos incorrectos'                
@@ -90,8 +90,8 @@ class UserController extends Controller
         }            
 
         return response()->json(
-            $response,
-            $response['code']
+            $resp,
+            $resp['code']
         );
     }
 
@@ -110,7 +110,7 @@ class UserController extends Controller
         ]);
 
         if (!$file || $validator->fails()) {
-            $response=array(
+            $resp=array(
                 'status'=>'error',
                 'code'=>400,
                 'message'=>'file avatar'
@@ -120,14 +120,14 @@ class UserController extends Controller
 
             Storage::disk('avatars')->put($avatar_name, \File::get($file));
 
-            $response=array(
+            $resp=array(
                 'status'=>'success',
                 'code'=>200,
                 'avatar'=>$avatar_name
             );             
         }              
 
-        return response()->json($response, $response['code'])
+        return response()->json($resp, $resp['code'])
             ->header('Content-Type', 'text/plain');
     }
 
@@ -140,6 +140,23 @@ class UserController extends Controller
     public function show($id)
     {
         //
+        $user = User::find($id);
+
+        if (is_object($user)) {
+            $resp=array(
+                'status'=>'success',
+                'code'=>200,
+                'user'=>$user
+            );
+        } else {
+            $resp=array(
+                'status'=>'success',
+                'code'=>404,
+                'message'=>'User not exists'
+            );
+        } 
+        
+        return response()->json($resp, $resp['code']);
     }
 
     /**
@@ -212,21 +229,21 @@ class UserController extends Controller
             $user_updated=User::where('id',$user_decoded->sub)
                 ->update($user_array);
 
-            $response=array(
+            $respv=array(
                 'status'=>'success',
                 'code'=>200,
                 'user'=>$user_array,
                 'updates'=>$user_array
             );
         }else{
-            $response=array(
+            $resp=array(
                 'status'=>'error',
                 'code'=>401,
                 'message'=>'Usuario no esta identificado'
             );
         }        
 
-        return response()->json($response, $response['code']);
+        return response()->json($resp, $resp['code']);
     }    
 
     /**
@@ -256,7 +273,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            $response=array(
+            $resp=array(
                 'status'=>'error',
                 'code'=>401,
                 'message'=>'Usuario no se pudo autorizar',
@@ -266,13 +283,13 @@ class UserController extends Controller
         }else{
             $pwd_hashed=hash('sha256',$user_object->password); 
                        
-            $response=$auth->signup($user_object->email,$pwd_hashed);
+            $resp=$auth->signup($user_object->email,$pwd_hashed);
 
             if (!empty($user_object->getToken)) {
-                $response=$auth->signup($user_object->email,$pwd_hashed,true);
+                $resp=$auth->signup($user_object->email,$pwd_hashed,true);
             }
         }        
 
-        return response()->json($response['jwt'], $response['code']);
+        return response()->json($resp['jwt'], $resp['code']);
     }
 }

@@ -22,3 +22,4 @@ Route::post('/user/login', 'UserController@login');
 Route::put('/user/update', 'UserController@update');
 Route::post('/user/avatar', 'UserController@storeAvatar')->middleware('jwt');
 Route::get('/user/avatar/{image}', 'UserController@showAvatar');
+Route::get('/user/{id}', 'UserController@show');

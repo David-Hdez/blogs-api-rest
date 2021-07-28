@@ -24,12 +24,12 @@ class JWT
         if ($checkToken) {
             return $next($request);
         } else {
-            $response=array(
+            $resp=array(
                 'status'=>'error',
                 'code'=>403                
             );
 
-            return response()->json($response, $response['code']);
+            return response()->json($resp, $resp['code']);
         }                
     }
 }
