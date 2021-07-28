@@ -2,11 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use Validator;
 use App\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    /**
+     * Instantiate a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {     
+        $this->middleware('jwt')->except('index', 'show');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -41,6 +52,41 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         //
+        $category_req=$request->input('category',null);
+        
+        $category_array=json_decode($category_req,true); 
+
+        if (!empty($category_array)) {
+            $validator = Validator::make($category_array, [
+                'name' => 'required',                                    
+            ]);
+    
+            if ($validator->fails()) {
+                $resp=array(
+                    'code'=>400,
+                    'message'=>'Category validation incorrect'
+                );
+            } else {
+                $category = new Category(); 
+                
+                $category->name=$category_array['name'];
+                
+                $category->save();
+    
+                $resp=array(
+                    'code'=>201,
+                    'message'=>'Category created',  
+                    'category'=>$category,
+                );
+            }
+        } else {
+            $resp=array(
+                'code'=>400,
+                'message'=>'Category not received'
+            );
+        }                        
+
+        return response()->json($resp, $resp['code']);        
     }
 
     /**

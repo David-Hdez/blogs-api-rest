@@ -26,7 +26,8 @@ class JWT
         } else {
             $resp=array(
                 'status'=>'error',
-                'code'=>403                
+                'code'=>403,
+                'message'=>'User is not authenticated'
             );
 
             return response()->json($resp, $resp['code']);
