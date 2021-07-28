@@ -52,8 +52,7 @@ class JWTAuth
          }
          
       } else {
-         $response=array(
-            'status'=>'error',
+         $response=array(            
             'code'=>404,            
             'jwt'=>'Usuario no esta registrado'
          );

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Validator;
 use Illuminate\Http\Request;
 use App\User;
+use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
@@ -95,6 +96,42 @@ class UserController extends Controller
     }
 
     /**
+     * Upload avatar for User.
+     *
+     * @param  \Illuminate\Http\Request  $request   
+     */
+    public function storeAvatar(Request $request)
+    {
+        $file = $request->file('file0');
+
+        $validator = \Validator::make($request->all(), [
+            'file0' => 'required|image',    
+            'file0' => 'mimes:jpeg,jpg,png,gif'                     
+        ]);
+
+        if (!$file || $validator->fails()) {
+            $response=array(
+                'status'=>'error',
+                'code'=>400,
+                'message'=>'file avatar'
+            ); 
+        }else{
+            $avatar_name=time().$file->getClientOriginalName();
+
+            Storage::disk('avatars')->put($avatar_name, \File::get($file));
+
+            $response=array(
+                'status'=>'success',
+                'code'=>200,
+                'avatar'=>$avatar_name
+            );             
+        }              
+
+        return response()->json($response, $response['code'])
+            ->header('Content-Type', 'text/plain');
+    }
+
+    /**
      * Display the specified resource.
      *
      * @param  int  $id
@@ -103,6 +140,27 @@ class UserController extends Controller
     public function show($id)
     {
         //
+    }
+
+    /**
+     * Display the avatar.
+     *
+     * @param  string  $name     
+     * @return \Illuminate\Http\Response
+     */
+    public function showAvatar($image)
+    {      
+        $exists = Storage::disk('avatars')->exists($image);
+
+        if ($exists) {
+            $avatar=Storage::disk('avatars')->get($image);
+          
+            return response($avatar, 200);
+        } else {          
+            return response()->json([
+                'message'=>'Avatar not exists'
+            ], 404);
+        }                
     }
 
     /**
@@ -169,43 +227,7 @@ class UserController extends Controller
         }        
 
         return response()->json($response, $response['code']);
-    }
-
-    /**
-     * Upload avatar for User.
-     *
-     * @param  \Illuminate\Http\Request  $request   
-     */
-    public function avatarUpload(Request $request)
-    {
-        $file = $request->file('file0');
-
-        $validator = \Validator::make($request->all(), [
-            'file0' => 'required|image',    
-            'file0' => 'mimes:jpeg,jpg,png,gif'                     
-        ]);
-
-        if (!$file || $validator->fails()) {
-            $response=array(
-                'status'=>'error',
-                'code'=>400,
-                'message'=>'file avatar'
-            ); 
-        }else{
-            $avatar_name=time().$file->getClientOriginalName();
-
-            Storage::disk('avatars')->put($avatar_name, \File::get($file));
-
-            $response=array(
-                'status'=>'success',
-                'code'=>200,
-                'avatar'=>$avatar_name
-            );             
-        }              
-
-        return response()->json($response, $response['code'])
-            ->header('Content-Type', 'text/plain');
-    }
+    }    
 
     /**
      * Remove the specified resource from storage.

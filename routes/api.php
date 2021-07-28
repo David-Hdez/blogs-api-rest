@@ -20,4 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/user/store', 'UserController@store');
 Route::post('/user/login', 'UserController@login');
 Route::put('/user/update', 'UserController@update');
-Route::post('/user/avatar/upload', 'UserController@avatarUpload')->middleware('jwt');
+Route::post('/user/avatar', 'UserController@storeAvatar')->middleware('jwt');
+Route::get('/user/avatar/{image}', 'UserController@showAvatar');
