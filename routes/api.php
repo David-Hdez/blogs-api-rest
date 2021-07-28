@@ -17,9 +17,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/user/store', 'UserController@store');
+Route::post('/user', 'UserController@store');
 Route::post('/user/login', 'UserController@login');
-Route::put('/user/update', 'UserController@update');
+Route::put('/user', 'UserController@update');
 Route::post('/user/avatar', 'UserController@storeAvatar')->middleware('jwt');
 Route::get('/user/avatar/{image}', 'UserController@showAvatar');
 Route::get('/user/{id}', 'UserController@show');
+
+Route::resource('category', 'CategoryController');
