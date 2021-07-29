@@ -145,13 +145,52 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Post  $post
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request    
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update($id, Request $request)
     {
         //
+        $post_req=$request->input('post',null);
+            
+        $post_array=json_decode($post_req,true); 
+
+        $resp=array(
+            'status'=>'error',
+            'code'=>400,  
+            'message'=>'Post received bad'
+        );
+
+        if (!empty($post_array)) {                        
+            $validator = \Validator::make($post_array, [
+                'title' => 'required',
+                'content' => 'required',
+                'category_id' => 'required',                                    
+            ]);
+
+            if ($validator->fails()) {
+                $resp['validator']=$validator->errors();
+
+                return response()->json($resp, 400);
+            }
+
+            unset($post_array['id']);
+            unset($post_array['user_id']);
+            unset($post_array['created_at']);
+            unset($post_array['user']);
+
+            $post_updated=Post::where('id',$id)
+                ->update($post_array);
+
+            $resp=array(
+                'status'=>'updated',
+                'code'=>200,
+                'post'=>$post_array                
+            );
+        }      
+
+        return response()->json($resp, $resp['code']);
     }
 
     /**
