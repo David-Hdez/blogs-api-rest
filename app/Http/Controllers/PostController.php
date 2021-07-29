@@ -181,12 +181,13 @@ class PostController extends Controller
             unset($post_array['user']);
 
             $post_updated=Post::where('id',$id)
-                ->update($post_array);
+                ->updateOrCreate($post_array);
 
             $resp=array(
                 'status'=>'updated',
                 'code'=>200,
-                'post'=>$post_array                
+                'post'=>$post_updated,
+                'updates'=>$post_array
             );
         }      
 
