@@ -130,13 +130,42 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Category  $category
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request     
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update($id, Request $request)
     {
-        //
+        // 
+        $category_req=$request->input('category',null);
+            
+        $category_array=json_decode($category_req,true); 
+
+        if (!empty($category_array)) {                        
+            $validator = Validator::make($category_array, [
+                'name' => 'required',                                    
+            ]);
+
+            unset($category_array['id']);
+            unset($category_array['created_at']);
+
+            $category_updated=Category::where('id',$id)
+                ->update($category_array);
+
+            $resp=array(
+                'status'=>'success',
+                'code'=>200,
+                'category'=>$category_array                
+            );
+        }else{
+            $resp=array(
+                'status'=>'error',
+                'code'=>400,
+                'message'=>'Category don´t received'
+            );
+        }        
+
+        return response()->json($resp, $resp['code']);
     }
 
     /**

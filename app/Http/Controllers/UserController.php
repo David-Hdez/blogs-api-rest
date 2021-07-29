@@ -194,7 +194,8 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request   
+     * @param  \Illuminate\Http\Request  $request  
+     * @return \Illuminate\Http\Response 
      */
     public function update(Request $request)
     {
@@ -229,7 +230,7 @@ class UserController extends Controller
             $user_updated=User::where('id',$user_decoded->sub)
                 ->update($user_array);
 
-            $respv=array(
+            $resp=array(
                 'status'=>'success',
                 'code'=>200,
                 'user'=>$user_array,
@@ -257,6 +258,12 @@ class UserController extends Controller
         //
     }
 
+    /**
+     * Login.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function login(Request $request)
     {
         //
