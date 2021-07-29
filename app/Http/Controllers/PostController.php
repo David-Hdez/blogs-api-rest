@@ -197,11 +197,31 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Post  $post
+     * @param  int  $id
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Post $post)
+    public function destroy($id, Request $request)
     {
-        //
+        //        
+        $post = Post::find($id);
+
+        if (!empty($post)) {
+            $post->delete();
+
+            $resp=array(
+                'status'=>'success',                
+                'post'=>$post,
+                'code'=>200     
+            );
+        } else {
+            $resp=array(
+                'status'=>'success',                
+                'message'=>'Post not exists',
+                'code'=>404     
+            );
+        }                
+
+        return response()->json($resp, $resp['code']);
     }
 }
