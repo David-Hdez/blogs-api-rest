@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Post;
 use Illuminate\Http\Request;
+use App\Helpers\JWTAuth;
 
 class PostController extends Controller
 {
@@ -51,6 +52,56 @@ class PostController extends Controller
     public function store(Request $request)
     {
         //
+        $post_req=$request->input('post',null);
+        
+        $post_object=json_decode($post_req); 
+        $post_array=json_decode($post_req,true); 
+
+        if (!empty($post_array)) {
+            $auth=new JWTAuth();
+            $token_req=$request->header('Authorization', null);
+            $user_decoded=$auth->checkToken($token_req,true);
+
+            $validator = \Validator::make($post_array, [
+                'title' => 'required',
+                'content' => 'required',
+                'category_id' => 'required',                
+                'image' => 'required',    
+            ]);
+
+            if ($validator->fails()) {
+                $resp=array(
+                    'code'=>400,
+                    'message'=>'Post validation',
+                    'status'=>'error'
+                );
+            } else {
+                $post = new Post();       
+
+                $post->user_id=$user_decoded->sub;
+                $post->category_id=$post_object->category_id;
+                $post->title=$post_object->title;
+                $post->content=$post_object->content;
+                $post->image=$post_object->image;
+                
+                $post->save();
+
+                $resp=array(
+                    'status'=>'success',
+                    'code'=>201,
+                    'message'=>'Post registrado',
+                    'created'=>$post
+                );
+            }
+            
+        } else {
+            $resp=array(
+                'code'=>400,
+                'message'=>'Post not received'
+            );
+        }                        
+
+        return response()->json($resp, $resp['code']); 
     }
 
     /**
