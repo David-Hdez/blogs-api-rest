@@ -12,14 +12,14 @@ class Post extends Model
      *
      * @var string
      */
-    protected $table = 'post';
+    protected $table = 'posts';
 
     /**
      * Get the user that owns the post.
      */
     public function user()
     {
-        return $this->belongsTo('App\user', 'user_id');
+        return $this->belongsTo('App\User', 'user_id');
     }
 
     /**
@@ -27,6 +27,6 @@ class Post extends Model
      */
     public function category()
     {
-        return $this->belongsTo('App\user', 'category_id');
+        return $this->belongsTo('App\Category', 'category_id');
     }
 }
