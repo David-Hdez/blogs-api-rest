@@ -57,10 +57,8 @@ class PostController extends Controller
         $post_object=json_decode($post_req); 
         $post_array=json_decode($post_req,true); 
 
-        if (!empty($post_array)) {
-            $auth=new JWTAuth();
-            $token_req=$request->header('Authorization', null);
-            $user_decoded=$auth->checkToken($token_req,true);
+        if (!empty($post_array)) {                        
+            $user_decoded=$this->identifying($request);
 
             $validator = \Validator::make($post_array, [
                 'title' => 'required',
@@ -180,15 +178,22 @@ class PostController extends Controller
             unset($post_array['created_at']);
             unset($post_array['user']);
 
-            $post_updated=Post::where('id',$id)
-                ->updateOrCreate($post_array);
+            $user_identified=$this->identifying($request);   
 
-            $resp=array(
-                'status'=>'updated',
-                'code'=>200,
-                'post'=>$post_updated,
-                'updates'=>$post_array
-            );
+            $post=Post::where('id',$id)
+                ->where('user_id',$user_identified->sub)
+                ->first();
+
+            if (!empty($post) && is_object($post)) {
+                $post->update($post_array);
+
+                $resp=array(
+                    'status'=>'updated',
+                    'code'=>200,     
+                    'post'=>$post,           
+                    'updates'=>$post_array
+                );
+            }                       
         }      
 
         return response()->json($resp, $resp['code']);
@@ -204,7 +209,12 @@ class PostController extends Controller
     public function destroy($id, Request $request)
     {
         //        
-        $post = Post::find($id);
+        // Solo usuario dueño del post puede eliminar 
+        $user_identified=$this->identifying($request);       
+
+        $post = Post::where('id',$id)
+            ->where('user_id',$user_identified->sub)
+            ->first();
 
         if (!empty($post)) {
             $post->delete();
@@ -216,12 +226,29 @@ class PostController extends Controller
             );
         } else {
             $resp=array(
-                'status'=>'success',                
-                'message'=>'Post not exists',
+                'status'=>'error',                
+                'message'=>'Post not exists or user is not the owner',
                 'code'=>404     
             );
         }                
 
         return response()->json($resp, $resp['code']);
+    }
+
+    /**
+     * De token tomando usuario
+     * 
+     * Poder identificar y verificar que pueda actualizar y borrar post que le pertenezcan                   
+     * @param  \Illuminate\Http\Request  $request
+     * @return $user_identified
+     */
+    private function identifying($request){
+        $auth=new JWTAuth();
+
+        $token_req=$request->header('Authorization', null);
+
+        $user_identified=$auth->checkToken($token_req,true);
+
+        return $user_identified;
     }
 }
