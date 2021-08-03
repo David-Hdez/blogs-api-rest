@@ -49,8 +49,7 @@ class JWTAuth
                'jwt'=>$decoded,
                'code'=>200
             );
-         }
-         
+         }         
       } else {
          $response=array(            
             'code'=>404,            

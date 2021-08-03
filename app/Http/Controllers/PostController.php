@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Post;
 use Illuminate\Http\Request;
 use App\Helpers\JWTAuth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -98,6 +99,43 @@ class PostController extends Controller
                 'message'=>'Post not received'
             );
         }                        
+
+        return response()->json($resp, $resp['code']); 
+    }
+
+    /**
+     * Store a image from post.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeImage(Request $request)
+    {
+        //
+        $file = $request->file('file0');
+
+        $validator = \Validator::make($request->all(), [
+            'file0' => 'required|image',    
+            'file0' => 'mimes:jpeg,jpg,png,gif'                     
+        ]);
+
+        if (!$file || $validator->fails()) {
+            $resp=array(
+                'status'=>'error',
+                'code'=>400,
+                'message'=>'In file image post'
+            ); 
+        }else{
+            $image_name=time().$file->getClientOriginalName();
+
+            Storage::disk('images')->put($image_name, \File::get($file));
+
+            $resp=array(
+                'status'=>'success',
+                'code'=>200,
+                'avatar'=>$image_name
+            );             
+        }              
 
         return response()->json($resp, $resp['code']); 
     }
