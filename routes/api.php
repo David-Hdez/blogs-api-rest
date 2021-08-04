@@ -29,3 +29,5 @@ Route::resource('category', 'CategoryController');
 Route::resource('post', 'PostController');
 Route::post('/post/image', 'PostController@storeImage');
 Route::get('/post/image/{image}', 'PostController@showAvatar');
+Route::get('/post/user/{user}', 'PostController@showByUser');
+Route::get('/post/category/{category}', 'PostController@showByCategory');

@@ -16,7 +16,12 @@ class PostController extends Controller
      */
     public function __construct()
     {     
-        $this->middleware('jwt')->except('index', 'show');
+        $this->middleware('jwt')->except(
+            'index', 
+            'show',
+            'showAvatar',
+            'showByCategory',
+            'showByUser');
     }
 
     /**
@@ -163,7 +168,6 @@ class PostController extends Controller
             );
         }
         
-
         return response()->json($resp, $resp['code']);
     }
 
@@ -186,6 +190,36 @@ class PostController extends Controller
                 'message'=>'Image not exists'
             ], 404);
         }                
+    }
+
+    /**
+     * Display the posts by specific category.
+     *
+     * @param  int  $category     
+     * @return \Illuminate\Http\Response
+     */
+    public function showByCategory($category)
+    {      
+        $posts_by_category = Post::where('category_id', $category)->get();
+
+        return response()->json(
+            $posts_by_category, 
+            200);              
+    }
+    
+    /**
+     * Display the posts by specific category.
+     *
+     * @param  int  $user     
+     * @return \Illuminate\Http\Response
+     */
+    public function showByUser($user)
+    {      
+        $posts_by_user = Post::where('user_id', $user)->get();
+
+        return response()->json(
+            $posts_by_user, 
+            200);              
     }
 
     /**
