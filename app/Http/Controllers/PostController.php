@@ -168,6 +168,27 @@ class PostController extends Controller
     }
 
     /**
+     * Display the image in post.
+     *
+     * @param  string  $name     
+     * @return \Illuminate\Http\Response
+     */
+    public function showAvatar($image)
+    {      
+        $exists = Storage::disk('images')->exists($image);
+
+        if ($exists) {
+            $image=Storage::disk('images')->get($image);
+          
+            return response($image, 200);
+        } else {          
+            return response()->json([
+                'message'=>'Image not exists'
+            ], 404);
+        }                
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Post  $post

@@ -28,3 +28,4 @@ Route::resource('category', 'CategoryController');
 // Post
 Route::resource('post', 'PostController');
 Route::post('/post/image', 'PostController@storeImage');
+Route::get('/post/image/{image}', 'PostController@showAvatar');
