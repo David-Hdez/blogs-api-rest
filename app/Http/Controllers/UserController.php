@@ -102,23 +102,33 @@ class UserController extends Controller
      */
     public function storeAvatar(Request $request)
     {
-        $file = $request->file('file0');
+        $file = $request->file('file');
+
+        $token_req=$request->header('Authorization');
+        $auth=new \JWTAuth();        
 
         $validator = \Validator::make($request->all(), [
             'file0' => 'required|image',    
             'file0' => 'mimes:jpeg,jpg,png,gif'                     
         ]);
 
-        if (!$file || $validator->fails()) {
+        if ($validator->fails()) {
             $resp=array(
                 'status'=>'error',
                 'code'=>400,
-                'message'=>'file avatar'
+                'message'=>'File avatar',
+                'validator'=>$validator->errors()              
             ); 
         }else{
+            $user_decoded=$auth->checkToken($token_req,true);
+
             $avatar_name=time().$file->getClientOriginalName();
 
             Storage::disk('avatars')->put($avatar_name, \File::get($file));
+
+            $user = User::find($user_decoded->sub);
+            $user->img = $avatar_name;
+            $user->save();
 
             $resp=array(
                 'status'=>'success',
