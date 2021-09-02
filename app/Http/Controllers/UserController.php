@@ -233,7 +233,7 @@ class UserController extends Controller
             $resp=array(
                 'status'=>'success',
                 'code'=>200,
-                'user'=>$user_array,
+                'user'=>$user_decoded,
                 'updates'=>$user_array
             );
         }else{
