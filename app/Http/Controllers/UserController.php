@@ -236,6 +236,7 @@ class UserController extends Controller
             unset($user_array['password']);
             unset($user_array['created_at']);
             unset($user_array['remember_token']);
+            unset($user_array['image']);
 
             $user_updated=User::where('id',$user_decoded->sub)
                 ->update($user_array);
