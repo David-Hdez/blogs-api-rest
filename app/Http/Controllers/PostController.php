@@ -117,7 +117,7 @@ class PostController extends Controller
     public function storeImage(Request $request)
     {
         //
-        $file = $request->file('file0');
+        $file = $request->file('file');
 
         $validator = \Validator::make($request->all(), [
             'file0' => 'required|image',    
