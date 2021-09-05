@@ -154,8 +154,7 @@ class PostController extends Controller
     public function show($id)
     {
         //
-        $post = Post::find($id)->load('category')
-            ->load('user');
+        $post = Post::find($id)->load('user', 'category');
 
         if (is_object($post)) {
             $resp=array(
